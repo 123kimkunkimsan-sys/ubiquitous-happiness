@@ -42,10 +42,12 @@ def main():
 
     train_loader = DataLoader(CrystalDataset(train_df, train_transform),
                                batch_size=args.batch_size_train, shuffle=True,
-                               num_workers=args.num_workers, pin_memory=True)
+                               num_workers=args.num_workers, pin_memory=True,
+                               persistent_workers=args.num_workers > 0)
     test_loader = DataLoader(CrystalDataset(test_df, test_transform),
                               batch_size=args.batch_size_test, shuffle=False,
-                              num_workers=args.num_workers, pin_memory=True)
+                              num_workers=args.num_workers, pin_memory=True,
+                              persistent_workers=args.num_workers > 0)
 
     model = build_model().to(device)
     criterion = nn.HuberLoss(delta=1.0)
