@@ -33,7 +33,8 @@ def main():
     config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"デバイス: {device}")
+    use_amp = device.type == "cuda"
+    print(f"デバイス: {device}  (AMP: {use_amp})")
 
     df_all = load_valid_dataset(args.dataset_csv)
     train_df, test_df = split_dataset(df_all)
@@ -54,6 +55,7 @@ def main():
     mse_fn = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=config.WEIGHT_DECAY)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.5, patience=3)
+    scaler = torch.amp.GradScaler(device.type, enabled=use_amp)
 
     best_mse = float("inf")
     for ep in range(1, args.epochs + 1):
@@ -62,10 +64,13 @@ def main():
         for x, y in train_loader:
             x, y = x.to(device), y.to(device).unsqueeze(1)
             optimizer.zero_grad()
-            loss = criterion(model(x), y)
-            loss.backward()
+            with torch.amp.autocast(device.type, enabled=use_amp):
+                loss = criterion(model(x), y)
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
             total_loss += loss.item() * x.size(0)
         train_mse = total_loss / len(train_df)
 
@@ -74,7 +79,8 @@ def main():
         with torch.no_grad():
             for x, y in test_loader:
                 x, y = x.to(device), y.to(device).unsqueeze(1)
-                out = model(x)
+                with torch.amp.autocast(device.type, enabled=use_amp):
+                    out = model(x)
                 t_mse += mse_fn(out, y).item() * x.size(0)
                 t_mae += (out - y).abs().sum().item()
         test_mse = t_mse / len(test_df)
