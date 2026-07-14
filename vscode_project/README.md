@@ -55,3 +55,24 @@ python evaluate.py
 ```
 
 `outputs/test_split.csv` と `outputs/best_model.pth` を読み込み、R²・MAE・RMSEを表示します。
+
+## Jupyter（notebook）で実行する
+
+`train.py` / `evaluate.py` と同じ内容を1つの notebook にまとめた `train.ipynb` を用意しています。
+学習曲線や予測値の散布図もその場で確認できます。
+
+**VSCode上で開く場合**（推奨）:
+
+1. VSCodeに拡張機能 **Python** と **Jupyter**（Microsoft製）をインストール
+2. `vscode_project/train.ipynb` を開く
+3. 右上の「カーネルの選択」で、`pip install`したPython環境を選択
+4. 上から順にセルを実行（▷ボタン、または「すべて実行」）
+
+**ブラウザのJupyterで開く場合**:
+
+```powershell
+cd vscode_project
+jupyter notebook train.ipynb
+```
+
+いずれの場合も、`data/crops/` + `data/dataset.csv` が `vscode_project/data/` に配置済みであることが前提です。
