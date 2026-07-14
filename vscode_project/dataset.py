@@ -11,15 +11,13 @@ from config import CROPS_DIR, PAD_SIZE, SEED, TRAIN_RATIO
 
 
 def pad_to_square(img, pad_size=PAD_SIZE):
+    """画像を中央配置で pad_size × pad_size にパディングする。
+    pad_size より大きい場合はアスペクト比を保ったまま縮小してから収める。"""
     w, h = img.size
-    if w > pad_size:
-        left = (w - pad_size) // 2
-        img = img.crop((left, 0, left + pad_size, h))
-        w = pad_size
-    if h > pad_size:
-        top = (h - pad_size) // 2
-        img = img.crop((0, top, w, top + pad_size))
-        h = pad_size
+    if w > pad_size or h > pad_size:
+        scale = pad_size / max(w, h)
+        img = img.resize((max(1, round(w * scale)), max(1, round(h * scale))))
+        w, h = img.size
     padded = Image.new(img.mode, (pad_size, pad_size), 0)
     padded.paste(img, ((pad_size - w) // 2, (pad_size - h) // 2))
     return padded
