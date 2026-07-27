@@ -29,6 +29,19 @@ yolo_project/
   train.ipynb        # notebook版（学習・評価・予測結果の目視確認）
 ```
 
+## （任意）大きい結晶のオーバーサンプリング
+
+検証してみて、サイズが大きい結晶ほど検出率が低い場合は、大きい結晶を含むtrainパッチを
+複製して登場頻度を上げることができる（valデータには影響しない）。
+
+```powershell
+python oversample_large.py
+```
+
+- デフォルトは100px以上の矩形を含むパッチを8倍に複製
+- 再実行しても安全（前回の複製を消してから作り直す）
+- 閾値・倍率は引数で変更可能: `python oversample_large.py --threshold-px 120 --factor 10`
+
 ## 学習
 
 ```powershell
