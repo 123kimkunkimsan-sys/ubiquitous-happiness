@@ -19,7 +19,6 @@ def parse_args():
     p.add_argument("--epochs", type=int, default=100)
     p.add_argument("--imgsz", type=int, default=640)
     p.add_argument("--batch", type=int, default=16)
-    p.add_argument("--project", type=str, default="outputs")
     p.add_argument("--name", type=str, default="crystal_yolo")
     return p.parse_args()
 
@@ -33,9 +32,9 @@ def main():
         epochs=args.epochs,
         imgsz=args.imgsz,
         batch=args.batch,
-        project=args.project,
         name=args.name,
     )
+    print(f"\n保存先: {model.trainer.save_dir / 'weights' / 'best.pt'}")
 
 
 if __name__ == "__main__":

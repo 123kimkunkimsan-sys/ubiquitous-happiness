@@ -26,6 +26,7 @@ yolo_project/
     data.yaml
   train.py
   evaluate.py
+  train.ipynb        # notebook版（学習・評価・予測結果の目視確認）
 ```
 
 ## 学習
@@ -35,7 +36,7 @@ python train.py
 ```
 
 - デフォルトは`yolov8n.pt`（軽量・事前学習済み）からの転移学習、100エポック、imgsz=640
-- 結果は `outputs/crystal_yolo/weights/best.pt` に保存される
+- 結果は `runs/detect/crystal_yolo/weights/best.pt` に保存される（`ultralytics`のデフォルトの保存先。実行後に表示される「保存先: ...」の行でも確認できる）
 
 主要な設定はコマンドライン引数で変更できます。
 
@@ -46,7 +47,12 @@ python train.py --model yolov8s.pt --epochs 150 --batch 8
 ## 評価
 
 ```powershell
-python evaluate.py --weights outputs/crystal_yolo/weights/best.pt
+python evaluate.py --weights runs/detect/crystal_yolo/weights/best.pt
 ```
 
 mAP50・mAP50-95・Precision・Recallを表示します。
+
+## Jupyter（notebook）で実行する
+
+`train.ipynb`に学習・評価・予測結果の目視確認（検出枠を描画した画像表示）までまとめてあります。
+VSCodeで開いてカーネルを選択し、上から順にセルを実行してください（`vscode_project/train.ipynb`と同じ要領）。

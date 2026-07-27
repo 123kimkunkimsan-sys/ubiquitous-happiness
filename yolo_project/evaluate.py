@@ -1,7 +1,7 @@
 """結晶検出（YOLO）の評価スクリプト。学習済みモデルをvalデータで評価する。
 
 使い方:
-    python evaluate.py --weights outputs/crystal_yolo/weights/best.pt
+    python evaluate.py --weights runs/detect/crystal_yolo/weights/best.pt
 """
 import argparse
 
@@ -10,7 +10,7 @@ from ultralytics import YOLO
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--weights", type=str, default="outputs/crystal_yolo/weights/best.pt")
+    p.add_argument("--weights", type=str, default="runs/detect/crystal_yolo/weights/best.pt")
     p.add_argument("--data", type=str, default="data/data.yaml")
     p.add_argument("--imgsz", type=int, default=640)
     return p.parse_args()
