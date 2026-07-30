@@ -33,3 +33,14 @@ yolo_project/
 1. **Colab**: `colab/yolo_dataset_pipeline.ipynb` を実行し、`yolo_dataset.zip` をダウンロードする。
 2. **VSCode**: `yolo_project/` に `yolo_dataset.zip` を `data/` として展開し、
    `yolo_project/README.md` の手順に従って学習（`train.py`）・評価（`evaluate.py`）を実行する。
+
+## 統合パイプライン（YOLO検出 + ResNet回帰）
+
+`yolo_project`のYOLOモデルと`vscode_project`のResNetモデルを組み合わせ、元の顕微鏡画像
+（1枚丸ごと）から結晶ごとの円相当径を自動推定する。詳細は`inference/README.md`を参照。
+
+```powershell
+cd inference
+pip install -r requirements.txt
+python predict.py --image path\to\raw_image.png
+```
