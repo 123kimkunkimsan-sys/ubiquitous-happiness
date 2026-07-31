@@ -27,6 +27,7 @@ IMG_EXTS = (".bmp", ".tif", ".tiff", ".jpg", ".png")
 EXCLUDE_MINUTES = {"0"}
 MAG_TO_UM_PER_PIXEL = {40: 0.088725, 20: 0.17353, 10: 0.34392}
 BASE_UM_PER_PIXEL = MAG_TO_UM_PER_PIXEL[40]
+MIN_GT_DIAMETER_PX = 10  # crystal_dataset_pipeline.ipynb の MIN_SIZE と同じ考え方（ノイズ除外）
 
 
 def normalize_folder_name(name):
@@ -88,6 +89,9 @@ def load_gt_diameters(csv_path, magnification):
     if diameter_col is None:
         return np.array([])
     px = df[diameter_col].dropna().astype(float)
+    # crystal_dataset_pipeline.ipynb の MIN_SIZE と同じ考え方で、
+    # 閾値処理由来のノイズ（極小サイズの誤検出）を除外する
+    px = px[px >= MIN_GT_DIAMETER_PX]
     return (px * MAG_TO_UM_PER_PIXEL[magnification]).to_numpy()
 
 
@@ -133,12 +137,16 @@ def parse_args():
     p.add_argument("--patch-size", type=int, default=640)
     p.add_argument("--overlap-ratio", type=float, default=0.15)
     p.add_argument("--conf", type=float, default=0.25)
+    p.add_argument("--min-gt-diameter-px", type=float, default=MIN_GT_DIAMETER_PX,
+                   help="手作業CSVの円相当径(px)がこの値未満の行はノイズとして除外")
     p.add_argument("--output-csv", type=str, default="results/validation_results.csv")
     return p.parse_args()
 
 
 def main():
+    global MIN_GT_DIAMETER_PX
     args = parse_args()
+    MIN_GT_DIAMETER_PX = args.min_gt_diameter_px
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"デバイス: {device}")
 
