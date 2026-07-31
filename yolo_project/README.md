@@ -15,8 +15,8 @@ GPU（CUDA）を使う場合は、`torch`がCUDA対応版になっているか�
 
 ## データの配置
 
-Colabからダウンロードした `yolo_dataset.zip` を、この `yolo_project/` 直下に
-`data/` として展開してください。最終的に以下の構成になります。
+`data/`（`images/train/`・`images/val/`・`labels/train/`・`labels/val/`・`data.yaml`）を
+この `yolo_project/` 直下に用意する。作り方は2通りある。
 
 ```
 yolo_project/
@@ -24,19 +24,27 @@ yolo_project/
     images/train/, images/val/
     labels/train/, labels/val/
     data.yaml
+  local_dataset_pipeline.ipynb  # ローカルでdata/を直接作成（推奨）
   train.py
   evaluate.py
   train.ipynb        # notebook版（学習・評価・予測結果の目視確認）
 ```
 
-## データセットの再作成（ノイズ除去済み）
+### 方法A: ローカルで直接作成（推奨）
 
-`crystal_dataset_pipeline.ipynb`と違い、以前の`yolo_dataset_pipeline.ipynb`は手作業CSVに混ざる
-閾値処理由来の極小ノイズ矩形（`MIN_BOX_SIZE_PX`/`MIN_BOX_AREA_PX`未満）を除外していなかった。
-現在は同じ考え方でフィルタするよう修正済みなので、以前ダウンロードした`yolo_dataset.zip`を
-使っている場合は、Colabで`colab/yolo_dataset_pipeline.ipynb`を再実行して`data/`を作り直し、
-再学習することを推奨する（オーバーサンプリングは適用しないこと。過去の検証で精度が悪化することが
-確認済みのため）。
+元データ（画像・CSVフォルダ）がローカルにある場合は、`local_dataset_pipeline.ipynb`を
+VSCodeで開き、`IMAGE_ROOT`/`CSV_ROOT`を実際のパスに変更して上から実行するだけでよい。
+Google Driveのマウントも、zip化・ダウンロード・展開も不要で、`data/`が直接この場所に作られる。
+
+### 方法B: Colab経由
+
+元データがGoogle Drive上にある場合は、Colabで`colab/yolo_dataset_pipeline.ipynb`を実行して
+`yolo_dataset.zip`をダウンロードし、`yolo_project/`直下に`data/`として展開する。
+
+どちらの方法も、手作業CSVに混ざる閾値処理由来の極小ノイズ矩形（`MIN_BOX_SIZE_PX`/`MIN_BOX_AREA_PX`
+未満）を除外するフィルタが入っている。これより前に作った`yolo_dataset.zip`を使っている場合は、
+どちらかの方法で`data/`を作り直して再学習することを推奨する（オーバーサンプリングは適用しないこと。
+過去の検証で精度が悪化することが確認済みのため）。
 
 ## （任意）大きい結晶のオーバーサンプリング
 
