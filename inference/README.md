@@ -55,3 +55,28 @@ python predict.py --image path\to\raw_image.png `
 | `--overlap-ratio` | 0.15 | パッチの重なり率 |
 | `--conf` | 0.25 | YOLOの検出確信度しきい値 |
 | `--output-dir` | `results` | 出力先フォルダ |
+
+## 複数画像での一括検証（validate_batch.py）
+
+`colab/crystal_dataset_pipeline.ipynb` と同じフォルダ構成（`IMAGE_ROOT`の各サブフォルダに画像、
+`CSV_ROOT`の対応するサブフォルダに手作業計測CSV）をそのまま渡して、複数の画像に対して
+YOLO+ResNetパイプラインを一括実行し、手作業CSVとの誤差をまとめてCSVに出力する。
+
+```powershell
+python validate_batch.py --image-root "path\to\画像データ" --csv-root "path\to\Excelデータ"
+```
+
+`results/validation_results.csv`（`--output-csv`で変更可）に、画像ごとの以下の情報が1行ずつ出力される。
+
+| 列 | 意味 |
+|---|---|
+| `image` | 画像ファイル名 |
+| `magnification` | 倍率 |
+| `n_manual` / `n_pred` | 手作業/自動パイプラインの検出数 |
+| `mean_manual_um` / `mean_pred_um` | 平均粒径(µm) |
+| `mean_diff_pct` | 平均粒径の差（%） |
+| `median_manual_um` / `median_pred_um` | 中央値(µm) |
+| `count_diff_pct` | 検出数の差（%） |
+
+実行後、全画像をまとめた平均誤差率・件数の差もコンソールに表示される。「0分」データは
+crop用パイプラインと同様に自動的に除外される。
