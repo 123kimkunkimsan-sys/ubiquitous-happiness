@@ -29,6 +29,15 @@ yolo_project/
   train.ipynb        # notebook版（学習・評価・予測結果の目視確認）
 ```
 
+## データセットの再作成（ノイズ除去済み）
+
+`crystal_dataset_pipeline.ipynb`と違い、以前の`yolo_dataset_pipeline.ipynb`は手作業CSVに混ざる
+閾値処理由来の極小ノイズ矩形（`MIN_BOX_SIZE_PX`/`MIN_BOX_AREA_PX`未満）を除外していなかった。
+現在は同じ考え方でフィルタするよう修正済みなので、以前ダウンロードした`yolo_dataset.zip`を
+使っている場合は、Colabで`colab/yolo_dataset_pipeline.ipynb`を再実行して`data/`を作り直し、
+再学習することを推奨する（オーバーサンプリングは適用しないこと。過去の検証で精度が悪化することが
+確認済みのため）。
+
 ## （任意）大きい結晶のオーバーサンプリング
 
 検証してみて、サイズが大きい結晶ほど検出率が低い場合は、大きい結晶を含むtrainパッチを
